@@ -1,4 +1,3 @@
-import { hash } from "bcrypt";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs"
@@ -17,7 +16,7 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  LastName: {
+  lastName: {
     type: String,
     required: false,
   },
@@ -36,15 +35,20 @@ const UserSchema = mongoose.Schema({
 });
 
 UserSchema.pre("save", async function (next) {
-  const salt = await bcrypt.getSalt();
-  this.password = await hash(this.password, salt);
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
 UserSchema.methods.createJWT = function () {
+  const secret = process.env.JWT_SECRET;
+  const payload = { userID: this._id, name: this.name };
+  console.log('JWT Payload:', payload);
+  console.log('JWT Secret:', secret);
+
   return jwt.sign(
-    { userID: this._id, name: this.name },
-    process.env.JWT_SCERET,
+    { userID: this._id, name: this.firstName },
+    process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_LIFETIME,
     }

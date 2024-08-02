@@ -23,8 +23,8 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
-// routs
 
+// routs
 app.use("/api/v1/auth", authRouter);
 
 const start = async () => {

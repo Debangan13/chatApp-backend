@@ -1,7 +1,7 @@
 import { Router } from 'express'
-const router = Router()
-
 import { signup } from '../controllers/AuthControllers.js'
+
+const router = Router()
 
 router.post('/signup',signup)
 
