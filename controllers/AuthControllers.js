@@ -1,7 +1,6 @@
 import User from "../models/UserModel.js";
 import {
   attachCookiesToResponse,
-  createJWT,
   createTokenUser,
 } from "../utils/index.js";
 
@@ -32,21 +31,28 @@ export const signup = async (req, res, next) => {
 // for user login
 export const login = async (req, res) => {
   try {
-    console.log('in login')
     const { email, password } = req.body;
-    console.log(email,password);
     if (!email && !password) {
 
       return res.status(400).send("Email and Password required");
     }
     const user = await User.findOne({ email });
+    console.log(user)
     if (!user) {
       return res.status(400).send("Email not found");
     }
 
     const isPasswordCorrect = await user.comparePassword(password)
-    console.log(isPasswordCorrect) 
-    console.log("hello ");
+    if(!isPasswordCorrect){
+      return res.status(401).send("Invalid Credentiales")
+    }
 
-  } catch (error) {}
+    const tokenUser = createTokenUser(user)
+    attachCookiesToResponse({res,user:tokenUser})
+    return res.status(200).json({user})
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Interna server error");
+  }
 };

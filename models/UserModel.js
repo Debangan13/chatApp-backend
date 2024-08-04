@@ -30,7 +30,7 @@ const UserSchema = mongoose.Schema({
   },
   ProfileSetup: {
     type: Boolean,
-    default: false,
+    default:true ,
   },
 });
 
@@ -41,7 +41,6 @@ UserSchema.pre("save", async function (next) {
 });
 
 UserSchema.methods.comparePassword = async function(password) {
-  console.log("methods");
   const isMatch = await bcrypt.compare(password,this.password)
   return isMatch
 }
