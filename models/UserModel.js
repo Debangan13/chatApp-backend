@@ -28,9 +28,9 @@ const UserSchema = mongoose.Schema({
     type: Number,
     required: false,
   },
-  ProfileSetup: {
+  profileSetup: {
     type: Boolean,
-    default:true ,
+    default:false ,
   },
 });
 
