@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs"
 
 const UserSchema = mongoose.Schema({
@@ -28,9 +27,9 @@ const UserSchema = mongoose.Schema({
     type: Number,
     required: false,
   },
-  ProfileSetup: {
+  profileSetup: {
     type: Boolean,
-    default:true ,
+    default:false ,
   },
 });
 
