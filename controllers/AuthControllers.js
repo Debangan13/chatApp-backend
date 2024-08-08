@@ -56,3 +56,7 @@ export const login = async (req, res) => {
     return res.status(500).send("Interna server error");
   }
 };
+
+export const getUserInfo = (req,res) => {
+  res.send("ok")
+}
