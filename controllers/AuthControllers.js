@@ -1,3 +1,4 @@
+import { v2 as cloudinary } from "cloudinary";
 import User from "../models/UserModel.js";
 import { attachCookiesToResponse, createTokenUser } from "../utils/index.js";
 
@@ -28,19 +29,20 @@ export const signup = async (req, res, next) => {
 // for user login
 export const login = async (req, res) => {
 	try {
+		console.log("in login");
 		const { email, password } = req.body;
 		if (!email && !password) {
 			return res.status(400).send("Email and Password required");
 		}
 		const user = await User.findOne({ email });
-		console.log(user);
+		console.log("user", user);
 		if (!user) {
 			return res.status(400).send("Email not found");
 		}
 
 		const isPasswordCorrect = await user.comparePassword(password);
 		if (!isPasswordCorrect) {
-			return res.status(401).send("Invalid Credentiales");
+			return res.send("Invalid Credentiales");
 		}
 
 		const tokenUser = createTokenUser(user);
@@ -54,17 +56,17 @@ export const login = async (req, res) => {
 
 export const getUserInfo = async (req, res) => {
 	try {
-		const user = req.user
-		console.log("user:",user)
+		const user = req.user;
 		if (!user) {
 			return res.status(404).send("User with given id not found");
 		}
-		return res
-			.status(200)
-			.json({ id: user.userId, email: user.email, profileSetup: user.profileSetup });
-		
+		return res.status(200).json({
+			id: user.userId,
+			email: user.email,
+			profileSetup: user.profileSetup,
+		});
 	} catch (error) {
-		console.log(error)
+		console.log(error);
 		res.status(500).send("Server error");
 	}
 };
@@ -82,23 +84,83 @@ export const updateProfile = async (req, res) => {
 	const user = await User.findByIdAndUpdate(
 		userId,
 		{
-			firstName,lastName,color,profileSetup:true
+			firstName,
+			lastName,
+			color,
+			profileSetup: true,
 		},
-		{new:true,runValidators:true}
-	)
-
+		{ new: true, runValidators: true }
+	);
 
 	res.status(200).json({
 		user: {
-
 			id: user._id,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			color: user.color,
 			profileSetup: user.profileSetup,
 			image: user.image,
-			color: user.color,
 			email: user.email,
 		},
 	});
+};
+
+export const addProfileImage = async (req, res) => {
+	const {
+		body: { image },
+		user: { userId },
+	} = req;
+
+	const user = await User.findByIdAndUpdate(
+		userId,
+		{ image: image },
+		{ new: true, runValidators: true }
+	);
+
+	res.status(200).json({
+		user: {
+			id: user._id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			color: user.color,
+			profileSetup: user.profileSetup,
+			image: user.image,
+			email: user.email,
+		},
+	});
+};
+export const removeProfileImage = async (req, res) => {
+	const {
+		body: { publicID },
+		user: { userId },
+	} = req;
+
+	console.log({publicID})
+	const user = await User.findById(userId)
+	if(!user) return res.status(404).send("User not found")
+
+	await cloudinary.api.delete_resources_by_prefix(`Home/${publicID}`).then(result => console.log(result));
+
+	user.image = null
+	await user.save()
+
+	res.status(200).send("Profile image removed successfully")
+};
+
+export const generateSignature = (req, res) => {
+	try {
+		const timestamp = Math.round(new Date().getTime() / 1000);
+
+		const signature = cloudinary.v2.utils.api_sign_request(
+			{
+				timestamp: timestamp,
+				upload_preset: "your_upload_preset", // replace with your Cloudinary upload preset
+			},
+			process.env.CLOUDINARY_API_SECRET
+		);
+
+		res.json({ signature, timestamp });
+	} catch (error) {
+		console.log(error.message);
+	}
 };
