@@ -57,7 +57,7 @@ export const login = async (req, res) => {
 export const getUserInfo = async (req, res) => {
 	try {
 		const user = await User.findById(req.user.userId);
-		console.log(user)
+		console.log(user);
 		if (!user) {
 			return res.status(404).send("User with given id not found");
 		}
@@ -65,6 +65,10 @@ export const getUserInfo = async (req, res) => {
 			id: user._id,
 			email: user.email,
 			profileSetup: user.profileSetup,
+			image: user.image,
+			color: user.color,
+			firstName: user.firstName,
+			lastName: user.lastName,
 		});
 	} catch (error) {
 		console.log(error);
@@ -132,24 +136,25 @@ export const addProfileImage = async (req, res) => {
 };
 export const removeProfileImage = async (req, res) => {
 	try {
-		
 		const {
 			body: { publicID },
 			user: { userId },
 		} = req;
-	
-		console.log({publicID})
-		const user = await User.findById(userId)
-		if(!user) return res.status(404).send("User not found")
-	
-		await cloudinary.api.delete_resources_by_prefix(`${publicID}`).then(result => console.log(result));
-	
-		user.image = null
-		await user.save()
-	
-		res.status(200).send("Profile image removed successfully")
+
+		console.log({ publicID });
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).send("User not found");
+
+		await cloudinary.api
+			.delete_resources_by_prefix(`${publicID}`)
+			.then((result) => console.log(result));
+
+		user.image = null;
+		await user.save();
+
+		res.status(200).send("Profile image removed successfully");
 	} catch (error) {
-		console.log(error.message)
+		console.log(error.message);
 	}
 };
 
@@ -166,6 +171,21 @@ export const generateSignature = (req, res) => {
 		);
 
 		res.json({ signature, timestamp });
+	} catch (error) {
+		console.log(error.message);
+	}
+};
+
+export const logout = (req, res) => {
+	try {
+		res
+			.clearCookie("token", {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "strict",
+			})
+			.status(200)
+			.send("Successfully logout");
 	} catch (error) {
 		console.log(error.message);
 	}
