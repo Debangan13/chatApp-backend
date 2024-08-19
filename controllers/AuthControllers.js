@@ -56,12 +56,13 @@ export const login = async (req, res) => {
 
 export const getUserInfo = async (req, res) => {
 	try {
-		const user = req.user;
+		const user = await User.findById(req.user.userId);
+		console.log(user)
 		if (!user) {
 			return res.status(404).send("User with given id not found");
 		}
 		return res.status(200).json({
-			id: user.userId,
+			id: user._id,
 			email: user.email,
 			profileSetup: user.profileSetup,
 		});
@@ -130,21 +131,26 @@ export const addProfileImage = async (req, res) => {
 	});
 };
 export const removeProfileImage = async (req, res) => {
-	const {
-		body: { publicID },
-		user: { userId },
-	} = req;
-
-	console.log({publicID})
-	const user = await User.findById(userId)
-	if(!user) return res.status(404).send("User not found")
-
-	await cloudinary.api.delete_resources_by_prefix(`Home/${publicID}`).then(result => console.log(result));
-
-	user.image = null
-	await user.save()
-
-	res.status(200).send("Profile image removed successfully")
+	try {
+		
+		const {
+			body: { publicID },
+			user: { userId },
+		} = req;
+	
+		console.log({publicID})
+		const user = await User.findById(userId)
+		if(!user) return res.status(404).send("User not found")
+	
+		await cloudinary.api.delete_resources_by_prefix(`${publicID}`).then(result => console.log(result));
+	
+		user.image = null
+		await user.save()
+	
+		res.status(200).send("Profile image removed successfully")
+	} catch (error) {
+		console.log(error.message)
+	}
 };
 
 export const generateSignature = (req, res) => {
