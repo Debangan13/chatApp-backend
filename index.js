@@ -14,7 +14,8 @@ cloudinary.config({
 
 
 // importing routes 
-import authRouter from './routes/AuthRoutes.js'
+import authRoute from './routes/AuthRoutes.js'
+import contactRoute from './routes/ContactRoute.js'
 
 
 const app = express() 
@@ -33,7 +34,8 @@ app.use(cors({
 app.use(cookieParser());
 
 // routs
-app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/contact", contactRoute);
 
 const start = async () => {
 	try {
