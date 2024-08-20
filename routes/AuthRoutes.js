@@ -6,7 +6,8 @@ import {
 	signup,
 	updateProfile,
 	addProfileImage,
-	removeProfileImage
+	removeProfileImage,
+	logout
 } from "../controllers/AuthControllers.js";
 import { authenticatedUser } from "../middlewares/authentication.js";
 
@@ -20,5 +21,6 @@ router.post("/update-profile", authenticatedUser, updateProfile);
 router.get("/get-signature", generateSignature);
 router.post("/upload-profile-image",authenticatedUser,addProfileImage)
 router.delete("/remove-profile-image",authenticatedUser,removeProfileImage)
+router.post("/logout",logout)
 
 export default router;
