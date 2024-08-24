@@ -57,7 +57,6 @@ export const login = async (req, res) => {
 export const getUserInfo = async (req, res) => {
 	try {
 		const user = await User.findById(req.user.userId);
-		console.log(user);
 		if (!user) {
 			return res.status(404).send("User with given id not found");
 		}
