@@ -9,6 +9,8 @@ export const signup = async (req, res, next) => {
 		if (!email && !password) {
 			return res.status(400).send("Email and Password required");
 		}
+		console.log(req.body)
+		
 		const user = await User.create({ ...req.body });
 		const tokenUser = createTokenUser(user);
 		attachCookiesToResponse({ res, user: tokenUser });
