@@ -16,6 +16,7 @@ cloudinary.config({
 // importing routes 
 import authRoute from './routes/AuthRoutes.js'
 import contactRoute from './routes/ContactRoute.js'
+import setupSocket from "./socket.js"
 
 
 const app = express() 
@@ -40,9 +41,10 @@ app.use("/api/v1/contact", contactRoute);
 const start = async () => {
 	try {
 		await connectDB(process.env.MONGO_URI )
-		app.listen(port, () =>
+		const server = app.listen(port, () =>
 			console.log(`Server is listening on port ${port}...`)
 		);
+		setupSocket(server)
 	} catch (error) {
 		console.log(error.message);
 	}
