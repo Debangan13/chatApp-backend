@@ -16,6 +16,7 @@ cloudinary.config({
 // importing routes 
 import authRoute from './routes/AuthRoutes.js'
 import contactRoute from './routes/ContactRoute.js'
+import messageRoute from './routes/MessagesRoute.js'
 import setupSocket from "./socket.js"
 
 
@@ -38,6 +39,7 @@ app.use(cookieParser());
 // routs
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/contact", contactRoute);
+app.use("/api/v1/messages",messageRoute);
 
 const start = async () => {
 	try {
