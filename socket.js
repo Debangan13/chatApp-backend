@@ -90,6 +90,7 @@ const setupSocket = (server) => {
                 const messageDate = await Message.findById(createdMessage._id)
                     .populate("sender", "id email firstName lastName image color")
                     .populate("recipient", "id email firstName lastName image color");
+				console.log(messageDate)
                 if (recipientSocketId) {
                     io.to(recipientSocketId).emit("recieveMessage", messageDate);
                 }
