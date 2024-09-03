@@ -78,15 +78,33 @@ export const getContactsFromDmList = async (req, res) => {
 					as: "contactInfo",
 				},
 			},
+			/* by doing this i am getting an array of like this  
+				email:['test3@gmail.com']
+				firstName:['ram']
+				image:[]
+				lastMessageTime:"2024-08-31T08:35:18.724Z"
+				lastName:['sham']*/
+				
+			// {
+			// 	$project: {
+			// 		_id: 1,
+			// 		lastMessageTime: 1,
+			// 		email: "$contactInfo.email",
+			// 		firstName: "$contactInfo.firstName",
+			// 		lastName: "$contactInfo.lastName",
+			// 		image: "$contactInfo.image",
+			// 		color: "$contactInfo.color",
+			// 	},
+			// },
 			{
 				$project: {
 					_id: 1,
 					lastMessageTime: 1,
-					email: "$contactInfo.email",
-					firstName: "$contactInfo.firstName",
-					lastName: "$contactInfo.lastName",
-					image: "$contactInfo.image",
-					color: "$contactInfo.color",
+					email: { $arrayElemAt: ["$contactInfo.email", 0] },
+					firstName: { $arrayElemAt: ["$contactInfo.firstName", 0] },
+					lastName: { $arrayElemAt: ["$contactInfo.lastName", 0] },
+					image: { $arrayElemAt: ["$contactInfo.image", 0] },
+					color: { $arrayElemAt: ["$contactInfo.color", 0] },
 				},
 			},
 			{
