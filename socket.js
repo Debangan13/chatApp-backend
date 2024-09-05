@@ -56,6 +56,7 @@ const setupSocket = (server) => {
 
 	io.on("connection", (socket) => {
 		// Mapping userId to socket.id
+		console.log(socket.id)
 		const userId = socket.handshake.query.userId;
 		if (userId) {
 			userSocketMap.set(userId, socket.id);
